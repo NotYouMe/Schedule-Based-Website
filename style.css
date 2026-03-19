@@ -48,7 +48,24 @@ body {
     border-radius: 6px;
     cursor: pointer;
 }
+.top-nav {
+    position: relative;
+    z-index: 100; /* Keeps the nav above everything else */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* ... existing styles ... */
+}
 
+.auth-trigger {
+    cursor: pointer; /* Makes the "Hand" icon appear on hover */
+    position: relative;
+    z-index: 101;
+}
+
+.hidden {
+    display: none !important;
+}
 /* Dashboard Layout */
 .dashboard { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
 
