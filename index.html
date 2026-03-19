@@ -3,56 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindSpill | The Last Calender You Need</title>
+    <title>Mindspill | Professional Thought Orchestrator</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">MINDGRID</div>
-        <div class="nav-right">
-            <button id="theme-toggle" class="btn-icon">🌓</button>
-            <button id="auth-trigger" class="btn-primary">Account</button>
+    <nav class="top-nav">
+        <div class="brand">MINDSPILL</div>
+        <div class="nav-controls">
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">🌓</button>
+            <button id="auth-nav-btn" class="auth-trigger">Sign In / Account</button>
         </div>
     </nav>
 
-    <section id="auth-section" class="page-overlay hidden">
-        <div class="auth-card">
-            <button id="close-auth" class="btn-close">&times;</button>
-            <h2 id="auth-status">Sign In</h2>
-            <input type="email" id="email" placeholder="Email">
-            <input type="password" id="password" placeholder="Password">
-            <div class="auth-actions">
-                <button id="login-btn">Login</button>
-                <button id="signup-btn" class="btn-secondary">Sign Up</button>
+    <section id="auth-page" class="page-overlay hidden">
+        <div class="auth-modal">
+            <button id="close-auth" class="close-x">&times;</button>
+            <h2>Secure Access</h2>
+            <div class="auth-form">
+                <input type="email" id="email" placeholder="Email Address">
+                <input type="password" id="password" placeholder="Password">
+                <button id="login-btn" class="btn-primary">Login</button>
+                <button id="signup-btn" class="btn-secondary">Create Account</button>
             </div>
+            <p class="note">Logging in allows you to access your schedule from any device.</p>
         </div>
     </section>
 
-    <main id="app-content">
-        <section class="input-area">
-            <input type="text" id="thought-input" placeholder="Enter a thought...">
-            <input type="time" id="time-input">
-            <button id="add-thought">Add to Grid</button>
+    <main class="content-wrapper">
+        <header class="hero-section">
+            <h1>Daily Orchestrator</h1>
+            <p>Assign your thoughts to time. Organize your focus.</p>
+        </header>
+
+        <section class="input-panel">
+            <input type="text" id="thought-task" placeholder="What is the task or thought?">
+            <input type="time" id="thought-time">
+            <button id="add-btn">Add to Timetable</button>
         </section>
 
-        <div id="storage-grid" class="grid-container">
-            </div>
+        <section id="storage-grid" class="thought-grid">
+            </section>
 
-        <section class="clock-visualization">
-            <div class="clock-wrapper">
+        <hr class="divider">
+
+        <section class="chrono-visualizer">
+            <div class="clock-container">
                 <svg id="visual-clock" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="48" class="clock-rim"/>
                     <circle cx="50" cy="50" r="45" class="clock-face"/>
-                    <g id="clock-partitions"></g>
-                    <line id="hour-hand" x1="50" y1="50" x2="50" y2="25" />
+                    <g id="clock-slices"></g>
+                    <line id="hour-hand" x1="50" y1="50" x2="50" y2="18" />
                     <circle cx="50" cy="50" r="2" fill="var(--text)" />
                 </svg>
-                <div id="digital-time">00:00:00</div>
+                <div id="digital-readout">00:00:00</div>
             </div>
+            <div class="clock-label">CURRENT CHRONO-CHART</div>
         </section>
     </main>
 
-    <audio id="alarm-tone" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    <audio id="alarm-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
     <script src="script.js"></script>
 </body>
 </html>
