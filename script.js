@@ -88,26 +88,60 @@ function renderUI() {
         slices.appendChild(slice);
     });
 }
-
-// --- CLOCK & ALARM ENGINE ---
+// --- Draw Clock Numbers ---
+function drawNumbers() {
+    const numberGroup = document.getElementById('clock-numbers');
+    numberGroup.innerHTML = '';
+    for (let i = 1; i <= 24; i++) {
+        const angle = (i / 24) * (2 * Math.PI) - (Math.PI / 2);
+        const x = 50 + 38 * Math.cos(angle); // 38 is the radius for text
+        const y = 50 + 38 * Math.sin(angle);
+        
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", x);
+        text.setAttribute("y", y);
+        text.textContent = i;
+        numberGroup.appendChild(text);
+    }
+}
+// --- BETTER CLOCK & ALARM ENGINE ---
 function tick() {
     const now = new Date();
-    document.getElementById('digital-readout').textContent = now.toLocaleTimeString();
+    
+    // 1. Digital Display
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    document.getElementById('digital-readout').textContent = `${h}:${m}:${s}`;
 
-    // Hand rotation
-    const rot = ((now.getHours() + now.getMinutes()/60) / 24) * 360;
-    document.getElementById('hour-hand').setAttribute('transform', `rotate(${rot}, 50, 50)`);
+    // 2. Analog Hand Rotation
+    // We remove the -90deg rotation from the SVG CSS and handle it here for accuracy
+    const totalMinutes = (now.getHours() * 60) + now.getMinutes();
+    const degrees = (totalMinutes / 1440) * 360; // 1440 mins in 24 hours
+    
+    const hourHand = document.getElementById('hour-hand');
+    // Origin is 50,50
+    hourHand.setAttribute('transform', `rotate(${degrees}, 50, 50)`);
 
-    // Check Alarm
-    const currentStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    // 3. Alarm Check
+    const currentShortTime = `${h}:${m}`;
     state.thoughts.forEach(t => {
-        if (t.time === currentStr && !t.triggered) {
-            document.getElementById('alarm-sound').play();
-            alert(`MINDPILL REMINDER: ${t.task}`);
-            t.triggered = true;
+        if (t.time === currentShortTime && !t.triggered) {
+            triggerAlarm(t);
         }
     });
 }
+function triggerAlarm(t) {
+    t.triggered = true;
+    const audio = document.getElementById('alarm-sound');
+    audio.play().catch(e => console.log("Audio play blocked until user interaction."));
+    alert(`MINDPILL: ${t.task}`);
+}
+
+// Initialization
+drawNumbers();
+setInterval(tick, 1000);
+tick(); // Run once immediately
 
 // --- THEME ---
 document.getElementById('theme-toggle').onclick = () => {
