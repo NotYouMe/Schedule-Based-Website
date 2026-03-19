@@ -1,7 +1,7 @@
 // Initialize Supabase (Use your own keys here)
 const supabaseUrl = 'https://iygjtjckumirkxgohjdj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Z2p0amNrdW1pcmt4Z29oamRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDgyOTIsImV4cCI6MjA4Nzc4NDI5Mn0.dXRJ2TvfP3WQr_jcO_MprRiy64lETcqS6gF2f4e0Pqs';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
 let state = {
     thoughts: JSON.parse(localStorage.getItem('mindspill_data')) || [],
@@ -14,7 +14,7 @@ const authPage = document.getElementById('auth-page');
 
 authNavBtn.onclick = () => {
     if (state.isLoggedIn) {
-        supabase.auth.signOut().then(() => location.reload());
+        sb.auth.signOut().then(() => location.reload());
     } else {
         authPage.classList.remove('hidden');
     }
@@ -22,7 +22,7 @@ authNavBtn.onclick = () => {
 
 document.getElementById('close-auth').onclick = () => authPage.classList.add('hidden');
 
-supabase.auth.onAuthStateChange(async (event, session) => {
+sb.auth.onAuthStateChange(async (event, session) => {
     state.isLoggedIn = !!session;
     if (session) {
         authNavBtn.textContent = "Logout";
@@ -42,8 +42,8 @@ document.getElementById('add-btn').onclick = async () => {
     const newThought = { id: Date.now(), task, time, triggered: false };
     
     if (state.isLoggedIn) {
-        const { data: { user } } = await supabase.auth.getUser();
-        await supabase.from('thoughts').insert([{ task, time, user_id: user.id }]);
+        const { data: { user } } = await sb.auth.getUser();
+        await sb.from('thoughts').insert([{ task, time, user_id: user.id }]);
         fetchCloudData();
     } else {
         state.thoughts.push(newThought);
@@ -54,7 +54,7 @@ document.getElementById('add-btn').onclick = async () => {
 };
 
 async function fetchCloudData() {
-    const { data } = await supabase.from('thoughts').select('*').order('time');
+    const { data } = await sb.from('thoughts').select('*').order('time');
     state.thoughts = data || [];
     renderUI();
 }
@@ -105,9 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Account button clicked."); // Verify in F12 Console
         
         // If logged in, sign out. If logged out, show the login page.
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        sb.auth.getSession().then(({ data: { session } }) => {
             if (session) {
-                supabase.auth.signOut().then(() => location.reload());
+                sb.auth.signOut().then(() => location.reload());
             } else {
                 authPage.classList.remove('hidden');
                 // Ensure the overlay is visible over other elements
