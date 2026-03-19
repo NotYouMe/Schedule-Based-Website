@@ -1,97 +1,144 @@
 :root {
-    --bg: #fdfdfd;
-    --text: #1e293b;
-    --card: #ffffff;
-    --primary: #6366f1;
-    --border: #e2e8f0;
-    --clock-fill: #f1f5f9;
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --bg: #f1f5f9;
+    --surface: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --border: #cbd5e1;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
 [data-theme="dark"] {
-    --bg: #0f172a;
-    --text: #f8fafc;
-    --card: #1e293b;
-    --primary: #818cf8;
+    --bg: #020617;
+    --surface: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
     --border: #334155;
-    --clock-fill: #1e293b;
 }
 
 body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Segoe UI', sans-serif;
-    transition: 0.3s ease;
+    line-height: 1.5;
 }
 
-.navbar {
+/* Header & Nav */
+.main-header {
+    background: var(--surface);
     display: flex;
     justify-content: space-between;
-    padding: 1rem 2rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.page-overlay {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 100;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    padding: 1rem 5%;
+    border-bottom: 2px solid var(--border);
+    box-shadow: var(--shadow);
 }
 
-.hidden { display: none; }
+.brand { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; }
+.version { font-size: 0.7rem; background: var(--primary); color: white; padding: 2px 6px; border-radius: 4px; vertical-align: middle; }
 
-/* Grid Layout */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
+.auth-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Dashboard Layout */
+.dashboard { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+
+.input-panel {
+    background: var(--surface);
     padding: 2rem;
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1.5rem;
+    align-items: flex-end;
+    border: 1px solid var(--border);
+}
+
+.input-group label { display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; }
+
+input {
+    padding: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+/* Grid Boxes */
+.boxes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 3rem 0;
 }
 
 .thought-box {
-    background: var(--card);
+    background: var(--surface);
     border: 1px solid var(--border);
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: 8px;
-    text-align: center;
+    border-left: 6px solid var(--primary);
+    box-shadow: var(--shadow);
 }
 
-/* SVG Clock Styles */
-.clock-visualization {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-}
+/* Chrono Visualizer */
+.visualizer-section { text-align: center; margin-top: 4rem; padding: 2rem; background: var(--surface); border-radius: 20px; border: 1px solid var(--border); }
 
-.clock-wrapper { position: relative; width: 300px; height: 300px; }
+.chrono-wrapper { position: relative; width: 350px; height: 350px; margin: 0 auto; }
 
-#visual-clock { width: 100%; height: 100%; transform: rotate(-90deg); }
-
-.clock-face { fill: var(--clock-fill); stroke: var(--border); stroke-width: 2; }
+#visual-clock { transform: rotate(-90deg); filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1)); }
+.clock-outer { fill: var(--border); }
+.clock-inner { fill: var(--surface); }
 
 .partition {
     fill: none;
     stroke: var(--primary);
     stroke-width: 45;
-    stroke-dasharray: 0.5 282.7; /* Small markers for times */
-    opacity: 0.6;
-}
-
-#hour-hand {
-    stroke: var(--primary);
-    stroke-width: 2;
+    stroke-dasharray: 1 282.7;
     stroke-linecap: round;
-    transition: transform 0.5s cubic-bezier(0.4, 2.08, 0.55, 0.44);
 }
 
-#digital-time {
+#hour-hand { stroke: var(--primary); stroke-width: 3; stroke-linecap: round; }
+
+#digital-clock {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: bold;
-    font-size: 1.2rem;
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
 }
+
+/* Auth Page Overlay */
+.auth-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.auth-container {
+    background: var(--surface);
+    padding: 3rem;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    border: 1px solid var(--border);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+}
+
+.hidden { display: none !important; }
