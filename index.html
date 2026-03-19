@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindGrid | Chrono-Orchestrator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">MINDGRID</div>
+        <div class="nav-right">
+            <button id="theme-toggle" class="btn-icon">🌓</button>
+            <button id="auth-trigger" class="btn-primary">Account</button>
+        </div>
+    </nav>
+
+    <section id="auth-section" class="page-overlay hidden">
+        <div class="auth-card">
+            <button id="close-auth" class="btn-close">&times;</button>
+            <h2 id="auth-status">Sign In</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <div class="auth-actions">
+                <button id="login-btn">Login</button>
+                <button id="signup-btn" class="btn-secondary">Sign Up</button>
+            </div>
+        </div>
+    </section>
+
+    <main id="app-content">
+        <section class="input-area">
+            <input type="text" id="thought-input" placeholder="Enter a thought...">
+            <input type="time" id="time-input">
+            <button id="add-thought">Add to Grid</button>
+        </section>
+
+        <div id="storage-grid" class="grid-container">
+            </div>
+
+        <section class="clock-visualization">
+            <div class="clock-wrapper">
+                <svg id="visual-clock" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" class="clock-face"/>
+                    <g id="clock-partitions"></g>
+                    <line id="hour-hand" x1="50" y1="50" x2="50" y2="25" />
+                    <circle cx="50" cy="50" r="2" fill="var(--text)" />
+                </svg>
+                <div id="digital-time">00:00:00</div>
+            </div>
+        </section>
+    </main>
+
+    <audio id="alarm-tone" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    <script src="script.js"></script>
+</body>
+</html>
