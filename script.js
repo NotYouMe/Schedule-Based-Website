@@ -1,110 +1,136 @@
-const supabaseUrl = 'YOUR_SUPABASE_URL';
-const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-// --- State Management ---
-let myThoughts = [];
-
-// --- Auth Handling ---
-const authTrigger = document.getElementById('auth-trigger');
-const authSection = document.getElementById('auth-section');
-
-authTrigger.addEventListener('click', () => {
-    const user = supabase.auth.getUser();
-    if(authTrigger.textContent === 'Logout') {
-        supabase.auth.signOut();
-    } else {
-        authSection.classList.remove('hidden');
-    }
-});
-
-document.getElementById('close-auth').onclick = () => authSection.classList.add('hidden');
-
-supabase.auth.onAuthStateChange((event, session) => {
-    if (session) {
-        authSection.classList.add('hidden');
-        authTrigger.textContent = 'Logout';
-        fetchThoughts();
-    } else {
-        authTrigger.textContent = 'Account';
-        document.getElementById('storage-grid').innerHTML = '';
-    }
-});
-
-// --- Theme Toggle ---
-document.getElementById('theme-toggle').onclick = () => {
-    const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', theme);
-};
-
-// --- Database Operations ---
-async function fetchThoughts() {
-    const { data } = await supabase.from('thoughts').select('*');
-    myThoughts = data || [];
-    renderUI();
+:root {
+    --primary: #1a365d; /* Deep Navy */
+    --accent: #2b6cb0;
+    --bg: #f7fafc;
+    --surface: #ffffff;
+    --text: #2d3748;
+    --border: #e2e8f0;
+    --shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-document.getElementById('add-thought').onclick = async () => {
-    const task = document.getElementById('thought-input').value;
-    const time = document.getElementById('time-input').value;
-    if(!task || !time) return;
-
-    await supabase.from('thoughts').insert([{ task, assigned_time: time }]);
-    fetchThoughts();
-};
-
-// --- Clock & Alarm Engine ---
-function updateClock() {
-    const now = new Date();
-    const h = now.getHours();
-    const m = now.getMinutes();
-    const s = now.getSeconds();
-
-    // Rotate Hand (360 degrees / 24 hours)
-    const deg = ((h + m/60) / 24) * 360;
-    document.getElementById('hour-hand').setAttribute('transform', `rotate(${deg}, 50, 50)`);
-    document.getElementById('digital-time').textContent = now.toLocaleTimeString();
-
-    // Check Alarms
-    const currentTimeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    myThoughts.forEach(t => {
-        if(t.assigned_time.startsWith(currentTimeStr) && !t.alerted) {
-            triggerAlarm(t);
-        }
-    });
+[data-theme="dark"] {
+    --bg: #1a202c;
+    --surface: #2d3748;
+    --text: #f7fafc;
+    --border: #4a5568;
+    --primary: #63b3ed;
 }
 
-function triggerAlarm(thought) {
-    document.getElementById('alarm-tone').play();
-    alert(`Reminder: ${thought.task}`);
-    thought.alerted = true; // Local flag to prevent repeat alerts
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background 0.3s ease;
 }
 
-function renderUI() {
-    const grid = document.getElementById('storage-grid');
-    const partitions = document.getElementById('clock-partitions');
-    grid.innerHTML = '';
-    partitions.innerHTML = '';
-
-    myThoughts.forEach(t => {
-        // Create Box
-        const box = document.createElement('div');
-        box.className = 'thought-box';
-        box.innerHTML = `<strong>${t.assigned_time}</strong><br>${t.task}`;
-        grid.appendChild(box);
-
-        // Create Clock Partition
-        const [hours, minutes] = t.assigned_time.split(':');
-        const rotation = ((parseInt(hours) + parseInt(minutes)/60) / 24) * 360;
-        
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        line.setAttribute("cx", "50");
-        line.setAttribute("cy", "50");
-        line.setAttribute("r", "22.5");
-        line.setAttribute("class", "partition");
-        line.setAttribute("transform", `rotate(${rotation} 50 50)`);
-        partitions.appendChild(line);
-    });
+/* Nav Bar */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 5%;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    box-shadow: var(--shadow);
 }
 
-setInterval(updateClock, 1000);
+.brand { font-weight: 800; font-size: 1.4rem; letter-spacing: 2px; color: var(--primary); }
+
+.auth-trigger {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Auth Page Overlay */
+.page-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-modal {
+    background: var(--surface);
+    padding: 3rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    position: relative;
+    border: 1px solid var(--border);
+}
+
+.hidden { display: none !important; }
+
+/* Dashboard Components */
+.content-wrapper { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+.input-panel {
+    display: flex;
+    gap: 1rem;
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+}
+
+input {
+    padding: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 1rem;
+    flex: 1;
+}
+
+.thought-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.thought-box {
+    background: var(--surface);
+    padding: 1.5rem;
+    border-radius: 4px;
+    border-left: 5px solid var(--primary);
+    box-shadow: var(--shadow);
+}
+
+/* Clock Visualization */
+.chrono-visualizer { text-align: center; margin-top: 2rem; }
+.clock-container { position: relative; width: 320px; height: 320px; margin: 0 auto; }
+
+#visual-clock { transform: rotate(-90deg); }
+.clock-rim { fill: var(--border); }
+.clock-face { fill: var(--surface); }
+
+.time-slice {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 45;
+    stroke-dasharray: 1.5 282.7;
+    stroke-linecap: round;
+}
+
+#hour-hand { stroke: var(--primary); stroke-width: 2.5; stroke-linecap: round; }
+
+#digital-readout {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.6rem;
+    font-weight: 700;
+}
