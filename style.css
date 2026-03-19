@@ -119,6 +119,48 @@ input {
     font-variant-numeric: tabular-nums;
 }
 
+/* Clock Specific Fixes */
+.clock-rim { 
+    fill: var(--border); 
+}
+
+.clock-face { 
+    fill: #ffffff; /* Forced white for clarity */
+    stroke: var(--primary);
+    stroke-width: 0.5;
+}
+
+[data-theme="dark"] .clock-face {
+    fill: #1e293b; /* Dark slate for dark mode eyes */
+}
+
+#hour-hand { 
+    stroke: #e11d48; /* Red accent for the hand so it stands out */
+    stroke-width: 2; 
+    stroke-linecap: round; 
+}
+
+.clock-labels {
+    font-size: 4px;
+    font-weight: 700;
+    fill: var(--text);
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
+.clock-center-dot {
+    fill: var(--primary);
+}
+
+/* Ensure the slices don't cover the numbers */
+.time-slice {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 10; /* Thinner so it doesn't look like a black blob */
+    opacity: 0.4;
+}
+
+
 /* Auth Page Overlay */
 .auth-overlay {
     position: fixed;
