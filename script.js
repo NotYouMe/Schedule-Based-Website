@@ -88,6 +88,48 @@ function renderUI() {
         slices.appendChild(slice);
     });
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const authNavBtn = document.getElementById('auth-nav-btn');
+    const authPage = document.getElementById('auth-page');
+    const closeAuth = document.getElementById('close-auth');
+
+    // TEST: Check if the button is even found by the script
+    if (!authNavBtn) {
+        console.error("Critical Error: 'auth-nav-btn' not found in HTML.");
+        return;
+    }
+
+    // 1. Open the Login Overlay
+    authNavBtn.addEventListener('click', () => {
+        console.log("Account button clicked."); // Verify in F12 Console
+        
+        // If logged in, sign out. If logged out, show the login page.
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                supabase.auth.signOut().then(() => location.reload());
+            } else {
+                authPage.classList.remove('hidden');
+                // Ensure the overlay is visible over other elements
+                authPage.style.display = 'flex'; 
+            }
+        });
+    });
+
+    // 2. Close the Login Overlay
+    if (closeAuth) {
+        closeAuth.onclick = () => {
+            authPage.classList.add('hidden');
+            authPage.style.display = 'none';
+        };
+    }
+    
+    // Initial Clock Setup
+    drawNumbers();
+    setInterval(tick, 1000);
+    tick();
+});
+
 // --- Draw Clock Numbers ---
 function drawNumbers() {
     const numberGroup = document.getElementById('clock-numbers');
