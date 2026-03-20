@@ -200,7 +200,14 @@ document.getElementById('theme-toggle').onclick = () => {
 
 setInterval(tick, 1000);
 renderUI();
-
+// --- 2. AUTH OVERLAY NAVIGATION ---
+    if (authNavBtn) {
+        authNavBtn.onclick = () => {
+            console.log("👤 Clicked: Account Navigation Button");
+            authPage.classList.toggle('hidden');
+            console.log("✅ Success: Auth Overlay toggled");
+        };
+    }
     // --- 3. CREATE ACCOUNT (SUPABASE) ---
     if (signupBtn) {
         signupBtn.onclick = async () => {
