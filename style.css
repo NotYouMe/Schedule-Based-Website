@@ -158,11 +158,12 @@ input {
 }
 
 .clock-labels {
-    font-size: 4px;
+    font-size: 5px;
     font-weight: 700;
     fill: var(--text);
-    text-anchor: middle;
-    dominant-baseline: middle;
+    /* Add this if you want numbers to face the user */
+    transform-box: fill-box;
+    transform-origin: center;
 }
 
 .clock-center-dot {
