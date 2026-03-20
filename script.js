@@ -208,48 +208,59 @@ renderUI();
             console.log("✅ Success: Auth Overlay toggled");
         };
     }
-    // --- 3. CREATE ACCOUNT (SUPABASE) ---
-    if (signupBtn) {
-        signupBtn.onclick = async () => {
-            console.log("📝 Clicked: Create Account Button");
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
 
-            if (!email || !password) {
-                console.warn("⚠️ Warning: Signup attempted with empty fields.");
-                return alert("Please enter both email and password.");
-            }
+ // --- 3. CREATE ACCOUNT ---
+signupBtn.onclick = async () => {
+    console.log("🖱️ Event: Signup Button Triggered");
+    
+    // Triple-check these IDs match your <input id="..."> in HTML
+    const emailInput = document.getElementById('auth-email');
+    const passInput = document.getElementById('auth-password');
 
-            const { data, error } = await sb.auth.signUp({ email, password });
-
-            if (error) {
-                console.error("❌ Error: Signup failed:", error.message);
-                alert(error.message);
-            } else {
-                console.log("🎉 Success: Account created for", email);
-                alert("Account created! Check your email for the verification link.");
-            }
-        };
+    if (!emailInput || !passInput) {
+        console.error("❌ UI Error: Could not find email or password input fields.");
+        return;
     }
 
-    // --- 4. LOGIN (SUPABASE) ---
-    if (loginBtn) {
-        loginBtn.onclick = async () => {
-            console.log("🔑 Clicked: Login Button");
-            const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
+    const email = emailInput.value;
+    const password = passInput.value;
 
-            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    console.log(`📡 Sending: Signup request for ${email}`);
 
-            if (error) {
-                console.error("❌ Error: Login failed:", error.message);
-                alert(error.message);
-            } else {
-                console.log("🔓 Success: User session started.");
-                location.reload(); // Refresh to sync data
-            }
-        };
+    const { data, error } = await sb.auth.signUp({
+        email: email,
+        password: password,
+    });
+
+    if (error) {
+        console.error("❌ Supabase Error:", error.message);
+        alert("Signup Failed: " + error.message);
+    } else {
+        console.log("🎉 Success: Account created!", data);
+        alert("Account created successfully!");
+        authPage.classList.add('hidden'); // Close the door after success
     }
+};
+
+// --- 4. LOGIN ---
+loginBtn.onclick = async () => {
+    console.log("🖱️ Event: Login Button Triggered");
+    const email = document.getElementById('auth-email').value;
+    const password = document.getElementById('auth-password').value;
+
+    const { data, error } = await sb.auth.signInWithPassword({
+        email: email,
+        password: password,
+    });
+
+    if (error) {
+        console.error("❌ Supabase Error:", error.message);
+        alert("Login Failed: " + error.message);
+    } else {
+        console.log("🔓 Success: User logged in. Session:", data.session);
+        location.reload(); 
+    }
+};
 
     // --- 5. ADD TASK ---
     if (addBtn) {
