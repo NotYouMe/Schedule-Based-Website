@@ -2,7 +2,10 @@
 const supabaseUrl = 'https://iygjtjckumirkxgohjdj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Z2p0amNrdW1pcmt4Z29oamRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyMDgyOTIsImV4cCI6MjA4Nzc4NDI5Mn0.dXRJ2TvfP3WQr_jcO_MprRiy64lETcqS6gF2f4e0Pqs';
 const sb = supabase.createClient(supabaseUrl, supabaseKey);
-
+// Checks to see if Supabase actually decided to load in today
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("🚀 Mindspill: System fully initialized.");
+    
 let state = {
     thoughts: JSON.parse(localStorage.getItem('mindspill_data')) || [],
     isLoggedIn: false
@@ -89,10 +92,14 @@ function renderUI() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Selectors
     const authNavBtn = document.getElementById('auth-nav-btn');
     const authPage = document.getElementById('auth-page');
-    const closeAuth = document.getElementById('close-auth');
+    const signupBtn = document.getElementById('signup-btn');
+    const loginBtn = document.getElementById('login-btn');
+    const addBtn = document.getElementById('add-btn');
+    const themeBtn = document.getElementById('theme-toggle');
+
 
     // TEST: Check if the button is even found by the script
     if (!authNavBtn) {
@@ -193,3 +200,80 @@ document.getElementById('theme-toggle').onclick = () => {
 
 setInterval(tick, 1000);
 renderUI();
+
+    // --- 3. CREATE ACCOUNT (SUPABASE) ---
+    if (signupBtn) {
+        signupBtn.onclick = async () => {
+            console.log("📝 Clicked: Create Account Button");
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            if (!email || !password) {
+                console.warn("⚠️ Warning: Signup attempted with empty fields.");
+                return alert("Please enter both email and password.");
+            }
+
+            const { data, error } = await sb.auth.signUp({ email, password });
+
+            if (error) {
+                console.error("❌ Error: Signup failed:", error.message);
+                alert(error.message);
+            } else {
+                console.log("🎉 Success: Account created for", email);
+                alert("Account created! Check your email for the verification link.");
+            }
+        };
+    }
+
+    // --- 4. LOGIN (SUPABASE) ---
+    if (loginBtn) {
+        loginBtn.onclick = async () => {
+            console.log("🔑 Clicked: Login Button");
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                console.error("❌ Error: Login failed:", error.message);
+                alert(error.message);
+            } else {
+                console.log("🔓 Success: User session started.");
+                location.reload(); // Refresh to sync data
+            }
+        };
+    }
+
+    // --- 5. ADD TASK ---
+    if (addBtn) {
+        addBtn.onclick = () => {
+            console.log("📥 Clicked: Add Thought Button");
+            const task = document.getElementById('thought-task').value;
+            const time = document.getElementById('thought-time').value;
+            
+            if (task && time) {
+                console.log(`✅ Success: Task "${task}" scheduled for ${time}`);
+                // [Your saving logic here]
+                renderUI();
+            } else {
+                console.warn("⚠️ Warning: Task added without content or time.");
+            }
+        };
+    }
+
+    // --- PREVENTING LINE 70 ERROR ---
+    function renderUI() {
+        const grid = document.getElementById('storage-grid');
+        const slices = document.getElementById('clock-slices');
+
+        // Check if elements exist before touching them
+        if (!grid || !slices) {
+            console.error("❌ UI Error: Storage grid or clock slices missing from HTML.");
+            return;
+        }
+
+        grid.innerHTML = '';
+        slices.innerHTML = '';
+        console.log("🔄 UI: Timetable and Clock refreshed.");
+    }
+
